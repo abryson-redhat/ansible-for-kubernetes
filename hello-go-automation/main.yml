@@ -41,7 +41,7 @@
           kind: Deployment
           metadata:
             name: hello-go
-            namespace: default
+            namespace: hello-go
           spec:
             replicas: 1
             selector:
@@ -67,7 +67,7 @@
           kind: Service
           metadata:
             name: hello-go
-            namespace: default
+            namespace: hello-go
           spec:
             type: LoadBalancer
             ports:
@@ -77,11 +77,17 @@
               app: hello-go
 
   post_tasks:
-    - name: Expose Hello Go on the host via Minikube.
-      command: minikube service hello-go --url=true
+    #- name: port forward the deployment
+    #  command: kubectl port-forward deployment/hello-go 8180:8180
+    #  changed_when: false
+    #  register: minikube_portforward
+
+    - name: Expose Hello Go on the Host via Minikube.
+      command: minikube service hello-go -n hello-go --url=true
       changed_when: false
       register: minikube_service
 
     - name: Print Hello Go URL.
       debug:
+        #msg: "Hello Go output: {{ minikube_service.stdout }}"
         msg: "Hello Go URL: {{ minikube_service['stdout_lines'][0] }}"
